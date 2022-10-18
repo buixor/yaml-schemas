@@ -2,33 +2,58 @@ $schema: "http://json-schema.org/draft-04/schema"
 id: "http://stsci.edu/schemas/yaml-schema/draft-01"
 title: "CrowdSec Parser"
 type: "object"
-properties: 
-  onsuccess:
-    type: string
-    description: "If node is successful and onsuccess equals next_stage, event is moved to the next stage"
-    pattern: "^next_stage$"
-  debug:
-    type: boolean
-    description: "If true, enables the debug. Default is false."
+required: ["name", "filter", "description"]
+properties:
   filter:
     type: string
     description: |
       filter must be a valid expr expression that will be evaluated against the event.
       If filter evaluation returns true or is absent, node will be processed.
       If filter returns false or a non-boolean, node won't be processed.
+  onsuccess:
+    type: string
+    description: "If node is successful and onsuccess equals next_stage, event is moved to the next stage"
+    enum: ["next_stage"]
+  name:
+    type: string
+    description: |
+      The name of the parser
+  debug:
+    type: boolean
+    description: "If true, enables the debug. Default is false."
+    enum: ["true", "false"]
   description:
     type: string
     description: "description of the parser usage"
   pattern_syntax:
     type: object
+    description: |
+      pattern_syntax can define additional GROK patterns that can be used in further nodes.
     patternProperties:
       "^[A-Z][A-Z_]*$":
         type: string
     additionalProperties: false
   grok:
-    type: object
-    properties:
-      pattern:
-        type: string
-      apply_on:
-        type: string
+    $ref: "#"
+  statics:
+    type: array
+    items:
+      type: object
+      properties:
+        meta:
+          type: string
+        statics:
+          type: string
+        enriched:
+          type: string
+        value:
+          type: string
+        expression:
+          type: string 
+
+  # whitelist:
+  #   type: object
+  #   #properties
+  # data:
+  #   type: object
+  #   #properties
